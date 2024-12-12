@@ -11,12 +11,14 @@ export class ProductService {
     return this.productModel.create(createProductDto);
   }
 
-  findAll() {
-    return this.productModel.findAll({ include: { all: true } });
+  async findAll() {
+    const products = await this.productModel.findAll()
+    const total = await this.productModel.count();
+    return {products,total};
   }
 
   findOne(id: number) {
-    return this.productModel.findOne({ where: { id },include: { all: true } });
+    return this.productModel.findOne({ where: { id }, include: { all: true } });
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

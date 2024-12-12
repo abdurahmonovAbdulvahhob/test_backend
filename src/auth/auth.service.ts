@@ -19,7 +19,6 @@ import { CustomerService } from '../customer/customer.service';
 import { Customer } from '../customer/models/customer.model';
 import { MailService } from '../mail/mail.service';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -54,7 +53,9 @@ export class AuthService {
 
   async signUpAdmin(createAdminDto: CreateAdminDto, res: Response) {
     const newAdmin = await this.adminService.create(createAdminDto);
-
+    newAdmin.is_creator = false;
+    await newAdmin.save();
+    console.log(newAdmin);
     if (!newAdmin) {
       throw new InternalServerErrorException("Yangi Admin qo'shishda xatolik");
     }
@@ -306,7 +307,9 @@ export class AuthService {
       const payload = await this.jwtService.verify(refresh_token, {
         secret: process.env.REFRESH_TOKEN_CUSTOMER_KEY,
       });
-      const customer = await this.customerService.findUserByEmail(payload.email);
+      const customer = await this.customerService.findUserByEmail(
+        payload.email,
+      );
       if (!customer) {
         throw new BadRequestException('Invalid refresh token');
       }
@@ -333,7 +336,7 @@ export class AuthService {
         access_token: tokens.access_token,
       };
     } catch (error) {
-      console.log('refreshcustomer error',error);
+      console.log('refreshcustomer error', error);
       throw new InternalServerErrorException();
     }
   }
