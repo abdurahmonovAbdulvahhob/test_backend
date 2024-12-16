@@ -1,3 +1,4 @@
+import { Customer } from './../customer/models/customer.model';
 import { Injectable } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
@@ -7,12 +8,40 @@ import { Wishlist } from './models/wishlist.model';
 @Injectable()
 export class WishlistService {
   constructor(@InjectModel(Wishlist) private wishlistModel: typeof Wishlist) {}
-  create(createWishlistDto: CreateWishlistDto) {
-    return this.wishlistModel.create(createWishlistDto);
+  async create(createWishlistDto: CreateWishlistDto) {
+    const [wishlist, created] = await this.wishlistModel.findOrCreate({
+      where: {
+        customerId: createWishlistDto.customerId,
+        productId: createWishlistDto.productId,
+      },
+      defaults: {
+        customerId: createWishlistDto.customerId,
+        productId: createWishlistDto.productId,
+      },
+    });
+    if (!created) {
+      return this.wishlistModel.destroy({
+        where: {
+          customerId: createWishlistDto.customerId,
+          productId: createWishlistDto.productId,
+        },
+      });
+    }
+    return wishlist;
   }
 
-  findAll() {
-    return this.wishlistModel.findAll({ include: { all: true } });
+  async findAll() {
+    const { count: total, rows: wishlist } =
+      await this.wishlistModel.findAndCountAll({
+        attributes: ['id', 'productId', 'createdAt'],
+        include: [
+          {
+            model: Customer,
+            attributes: [],
+          },
+        ],
+      });
+    return { wishlist, total };
   }
 
   findOne(id: number) {

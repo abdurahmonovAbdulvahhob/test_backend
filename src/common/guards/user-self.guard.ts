@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class UserGuard implements CanActivate {
+export class UserSelfGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
   canActivate(
@@ -19,14 +19,14 @@ export class UserGuard implements CanActivate {
     const authHeaders = req.headers.authorization;
 
     if (!authHeaders) {
-      throw new UnauthorizedException('Unauthorized admin');
+      throw new UnauthorizedException('Unauthorized user');
     }
 
     const bearer = authHeaders.split(' ')[0];
     const token = authHeaders.split(' ')[1];
 
     if (bearer !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Unauthorized admin');
+      throw new UnauthorizedException('Unauthorized user');
     }
 
     async function verify(token: string, jwtService: JwtService) {
@@ -42,18 +42,11 @@ export class UserGuard implements CanActivate {
         });
       }
       if (payloadAdmin) {
-        if(payloadAdmin.email){
-          return true;
-        }
+        return true;
       }
 
       if (!payload) {
         throw new UnauthorizedException('Unauthorized user');
-      }
-  
-      console.log(payload,req.body)
-      if (payload.id !== req.body.customerId) {
-        throw new UnauthorizedException("Ruxsat yo'q");
       }
 
       req.user = payload;

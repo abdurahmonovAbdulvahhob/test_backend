@@ -9,12 +9,12 @@ import { winstonConfig } from './common/helpers/winston.logger';
 
 async function start() {
   try {
-    const PORT = process.env.PORT || 3003;
-    const HOST = process.env.API_URL || "localhost";
+    const PORT = process.env.PORT || 3000;
+    const HOST = process.env.API_URL || 'localhost';
     const app = await NestFactory.create(AppModule, {
       logger: WinstonModule.createLogger(winstonConfig),
     });
-    app.enableCors()
+    app.enableCors();
     app.useGlobalPipes(new ValidationPipe());
     app.use(cookieParser());
     app.useGlobalFilters(new AllExceptionsFilter());
@@ -33,7 +33,7 @@ async function start() {
     SwaggerModule.setup('api/docs', app, document);
 
     await app.listen(PORT, () => {
-      console.log(`Server started at: ${PORT} on host url ${HOST}`);
+      console.log(`Server started at: ${PORT} on host ${HOST}`);
     });
   } catch (error) {
     console.log(error);

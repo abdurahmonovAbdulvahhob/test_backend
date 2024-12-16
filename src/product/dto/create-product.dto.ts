@@ -36,6 +36,7 @@ export class CreateProductDto {
     example: '1',
     description: 'categoryId of the product',
   })
+  @IsOptional()
   @IsNumber()
   categoryId: number;
 

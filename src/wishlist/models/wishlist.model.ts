@@ -11,7 +11,7 @@ import { Customer } from '../../customer/models/customer.model';
 import { Product } from '../../product/models/product.model';
 
 interface IWishlistCreationAttr {
-  categoryId: number;
+  customerId: number;
   productId: number;
 }
 
