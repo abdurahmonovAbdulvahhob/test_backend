@@ -5,6 +5,7 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Wishlist } from './models/wishlist.model';
 import { Request } from 'express';
+import { Product } from '../product/models/product.model';
 
 @Injectable()
 export class WishlistService {
@@ -37,15 +38,21 @@ export class WishlistService {
     const { count: total, rows: wishlist } =
       await this.wishlistModel.findAndCountAll({
         where:{customerId: user.id},
-        attributes: ['id', 'productId', 'createdAt'],
+        attributes: [],
         include: [
           {
             model: Customer,
             attributes: [],
           },
+          {
+            model: Product,
+            as: "product",
+            attributes: ["id", "name","description", "price", "image","categoryId","stock","average_rating"],
+          }
         ],
       });
-    return { wishlist, total };
+      const formatted = wishlist.map(wishlist=> wishlist.product)
+    return { wishlist:formatted, total };
   }
 
   findOne(id: number) {
