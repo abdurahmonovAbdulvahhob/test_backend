@@ -16,7 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { Admin } from './models/admin.model';
 import { ActivateAdminDto } from './dto/activate-admin.dto';
 import { DeactivateAdminDto } from './dto/deactivate-admin.dto';
-import { AdminSelfGuard } from '../common/guards';
+import { AdminGuard, AdminSelfGuard } from '../common/guards';
 import { CreatorGuard } from '../common/guards/creator.guard';
 
 @ApiTags('Admin')
@@ -43,7 +43,7 @@ export class AdminController {
     description: 'All admin value',
     type: [Admin],
   })
-  @UseGuards(CreatorGuard)
+  @UseGuards(AdminGuard)
   @Get('get')
   findAll() {
     return this.adminService.findAll();
@@ -68,7 +68,7 @@ export class AdminController {
     description: 'Update by Id',
     type: Admin,
   })
-  @UseGuards(AdminSelfGuard)
+  @UseGuards(CreatorGuard)
   @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
     return this.adminService.update(+id, updateAdminDto);
@@ -81,7 +81,6 @@ export class AdminController {
     description: 'Delete by Id',
     type: Number,
   })
-  @UseGuards(CreatorGuard)
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.adminService.remove(+id);

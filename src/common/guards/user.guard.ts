@@ -51,7 +51,7 @@ export class UserGuard implements CanActivate {
         throw new UnauthorizedException('Unauthorized user');
       }
   
-      console.log(payload,req.body)
+      // console.log(payload,req.body)
       if (payload.id !== req.body.customerId) {
         throw new UnauthorizedException("Ruxsat yo'q");
       }

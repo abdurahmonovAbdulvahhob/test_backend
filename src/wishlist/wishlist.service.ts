@@ -1,9 +1,10 @@
 import { Customer } from './../customer/models/customer.model';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Wishlist } from './models/wishlist.model';
+import { Request } from 'express';
 
 @Injectable()
 export class WishlistService {
@@ -30,9 +31,10 @@ export class WishlistService {
     return wishlist;
   }
 
-  async findAll() {
+  async findAll(@Req() user: any) {
     const { count: total, rows: wishlist } =
       await this.wishlistModel.findAndCountAll({
+        where:{customerId: user.id},
         attributes: ['id', 'productId', 'createdAt'],
         include: [
           {

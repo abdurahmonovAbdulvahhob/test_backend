@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
@@ -9,7 +9,7 @@ import { UserSelfGuard } from '../common/guards/user-self.guard';
 @Controller('wishlist')
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
-  
+
   @UseGuards(UserGuard)
   @ApiOperation({ summary: 'Creating wishlist' })
   @ApiResponse({
@@ -30,8 +30,8 @@ export class WishlistController {
     type: Object,
   })
   @Get('get')
-  findAll() {
-    return this.wishlistService.findAll();
+  findAll(@Req() req:any) {
+    return this.wishlistService.findAll(req.user);
   }
 
   // @ApiOperation({ summary: 'get one wishlist' })

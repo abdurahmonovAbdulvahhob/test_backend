@@ -56,7 +56,7 @@ export class AdminService {
       );
     }
     return await this.adminModel.update(
-      { ...updateAdminDto },
+      { ...updateAdminDto,is_creator: false },
       { where: { id }, returning: true },
     );
   }
