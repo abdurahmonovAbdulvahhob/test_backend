@@ -9,7 +9,7 @@ import { Request } from 'express';
 @Injectable()
 export class WishlistService {
   constructor(@InjectModel(Wishlist) private wishlistModel: typeof Wishlist) {}
-  async create(createWishlistDto: CreateWishlistDto) {
+  async create(createWishlistDto: CreateWishlistDto): Promise<any>{
     const [wishlist, created] = await this.wishlistModel.findOrCreate({
       where: {
         customerId: createWishlistDto.customerId,
@@ -21,12 +21,14 @@ export class WishlistService {
       },
     });
     if (!created) {
-      return this.wishlistModel.destroy({
+      const deletedRows = await this.wishlistModel.destroy({
         where: {
           customerId: createWishlistDto.customerId,
           productId: createWishlistDto.productId,
         },
       });
+
+      return {message: "Item deleted succecfully from wishlist", rows: deletedRows,status:200}
     }
     return wishlist;
   }
